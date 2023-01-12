@@ -17,12 +17,12 @@ def lambda_handler(event, context):
       hostname = 'api.move.mil'
     else:
       hostname = f'api.{os.environ["environment"]}.{os.environ["zone"]}'
-    
+
     # Need 90 day notice for ATO environments, can get away with 30 for non-ATO
     days_to_notify = 90
     if os.environ["zone"] == 'dp3.us':
         days_to_notify = 30
-    
+
     # List of hostnames, port numbers, and number of days to notify before expiration
     hosts = [
         {'hostname': hostname, 'port': 443, 'days_to_notify': days_to_notify}
@@ -34,6 +34,9 @@ def lambda_handler(event, context):
             port = host['port']
             days_to_notify = host['days_to_notify']
             ssl_context = ssl.create_default_context()
+            if os.environ["zone"] == 'move.mil':
+                ssl_context.load_verify_locations('DoD_CAs.pem')
+
             conn = ssl_context.wrap_socket(
                 socket.create_connection((hostname, port)),
                 server_hostname=hostname,
