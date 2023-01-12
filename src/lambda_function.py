@@ -34,7 +34,7 @@ def lambda_handler(event, context):
             port = host['port']
             days_to_notify = host['days_to_notify']
             ssl_context = ssl.create_default_context()
-            if os.environ["environment"] == 'prd' or os.environ["environment"] == 'stg':
+            if os.environ["zone"] == 'move.mil':
                 ssl_context.load_verify_locations('DoD_CAs.pem')
 
             conn = ssl_context.wrap_socket(
