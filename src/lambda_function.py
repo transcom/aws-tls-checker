@@ -51,4 +51,8 @@ def lambda_handler(event, context):
                 )
                 print(f'Lambda - CheckSSL - WARN - {hostname} SSL certificate will expire in less than {days_to_notify} days')
         except Exception as e:
+            sns.publish(
+                TopicArn=f'arn:aws-us-gov:sns:us-gov-west-1:{os.environ["account_id"]}:infra-gov-alert',
+                Message=f'Lambda - CheckSSL - ERROR - Error checking {hostname} SSL certificate expiration'
+            )
             print(f'Lambda - CheckSSL - ERROR - Error checking {hostname} SSL certificate expiration: {e}')
