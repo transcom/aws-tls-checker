@@ -1,10 +1,9 @@
-import json
-import datetime
+from datetime import datetime
 import boto3
 import ssl
 import socket
 import os
-
+from OpenSSL import SSL
 
 from typing import List, Dict
 
@@ -30,15 +29,14 @@ def lambda_handler(event, context):
 
     for host in hosts:
         try:
-            hostname = host['hostname']
-            port = host['port']
-            days_to_notify = host['days_to_notify']
-            ssl_context = ssl.create_default_context()
-            conn = ssl_context.wrap_socket(
-                socket.create_connection((hostname, port)),
-                server_hostname=hostname,
-            )
-            cert = conn.getpeercert()
+            context = SSL.Context(SSL.SSLv23_METHOD)
+
+            connection = SSL.Connection(context, socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+            connection.connect((hostname, port))
+            connection.do_handshake()
+            cert = connection.get_peer_certificate()
+            exp = datetime.strptime(cert.get_notAfter().decode(), '%Y%m%d%H%M%SZ')
+
             exp = datetime.datetime.strptime(cert['notAfter'], '%b %d %H:%M:%S %Y %Z')
             exp_time = (exp - datetime.datetime.utcnow()).total_seconds()
 

@@ -16,19 +16,19 @@ cp -r src/* "$version"/
 cd "$version" || exit
 
 # create a python environment in the directory
-#python3 -m venv env
+python3 -m venv env
 
 # activate the python environment
-#source env/bin/activate
+source env/bin/activate
 
 # install the requirements from the requirements.txt file
-#pip install -r requirements.txt -t ./
+pip install -r requirements.txt -t ./
 
 # deactivate the python environment
-#deactivate
+deactivate
 
 # remove the bin and lib folders created by the python environment
-#rm -rf env
+rm -rf env
 
 # archive all files in the new directory to a zip file
 zip -q -r "../$file_prefix$version.zip" .
